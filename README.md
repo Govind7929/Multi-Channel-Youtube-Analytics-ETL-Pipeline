@@ -98,22 +98,4 @@ The pipeline follows a structured ETL design:
 
 ---
 
-## #DataEngineering
 
-## #ETL
-
-## #Airflow
-
-## #PostgreSQL
-
-## #PowerBI
-
-## #Analytics
-
-## #DataPipeline
-
-## #Python
-
-## #PortfolioProject
-
-## #OpenToWork
