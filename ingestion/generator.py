@@ -87,7 +87,7 @@ def generate_video_catalog(channels: list, min_videos: int, max_videos: int) -> 
                 
                 def generate_data() -> str:
                     settings = load_yaml("connfigs/settings.yaml")
-                    channek_config = load_yaml("configs/channels.yaml")
+                    channel_config = load_yaml("configs/channels.yaml")
 
                     seed = settings["generator"]["randim_seed"]
                     random.seed(seed)
