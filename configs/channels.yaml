@@ -1,0 +1,20 @@
+channels:
+  - channel_id: CH001
+    channel_name: TechWithData
+    category: Techonolgy
+    country: India
+
+  - channel_id: CH002
+    channels_name: FitLifeStudio
+    category: Health & Fitness
+    country: India
+
+  - channel_id: CH003
+    channel_name: FinanceDecoded
+    category: Finance
+    country: India
+
+  - channel_id: CH004
+    channel_name: TravelVibes
+    category: Travel
+    country: India
