@@ -1,0 +1,28 @@
+project:
+  name: multi_channel_youtube_analytics
+  environment: local
+
+paths:
+  raw_output_dir: data_samples/raw
+  processed_output_dir: data_samples/processed
+  logs_dir: logs
+
+generator:
+  start_date: "2026-01-01"
+  end_date: "2026-03-31"
+  min_videos_er_channel: 8
+  max_vedio_per_channel: 15
+  random_seed: 42
+
+database:
+  raw_schema: raw
+  mart_schema: mart
+  raw_table: raw_video_daily
+  dim_channel_table: dim_channel
+  dim_video_table: dim_video
+  fact_table: fact_video_daily
+
+pipeline:
+  chunk_size: 5000
+  truncate_raw_before_load: true
+  truncate_mart_before_load: true
