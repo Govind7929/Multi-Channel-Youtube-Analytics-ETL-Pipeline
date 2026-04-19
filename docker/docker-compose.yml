@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: yt_postgres
+    environment:
+      POSTGRES_USER: yt_user
+      POSTGRES_PASSWORD: yt_password
+      POSTGRES_DB: youtube_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - yt_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yt_user -d youtube_analytics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-init:
+    image: apache/airflow:2.9.1
+    container_name: yt_airflow_init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://yt_user:yt_password@postgres:5432/youtube_analytics
+      POSTGRES_HOST: postgres
+    volumes:
+      - ../orchestration/airflow/dags:/opt/airflow/dags
+      - ../:/opt/project
+    command: >
+      bash -c "
+      pip install -r /opt/project/requirements.txt &&
+      airflow db migrate &&
+      airflow users create
+      --username admin
+      --password admin
+      --firstname Govind
+      --lastname User
+      --role Admin
+      --email admin@example.com
+      "
+
+  airflow-webserver:
+    image: apache/airflow:2.9.1
+    container_name: yt_airflow_webserver
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://yt_user:yt_password@postgres:5432/youtube_analytics
+      POSTGRES_HOST: postgres
+    volumes:
+      - ../orchestration/airflow/dags:/opt/airflow/dags
+      - ../:/opt/project
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "
+      pip install -r /opt/project/requirements.txt &&
+      airflow webserver
+      "
+
+  airflow-scheduler:
+    image: apache/airflow:2.9.1
+    container_name: yt_airflow_scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://yt_user:yt_password@postgres:5432/youtube_analytics
+      POSTGRES_HOST: postgres
+    volumes:
+      - ../orchestration/airflow/dags:/opt/airflow/dags
+      - ../:/opt/project
+    command: >
+      bash -c "
+      pip install -r /opt/project/requirements.txt &&
+      airflow scheduler
+      "
+
+volumes:
+  yt_postgres_data:
